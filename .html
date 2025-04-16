@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Currículo</title>
+    <link rel="stylesheet" href=".css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Biblioteca para gerar PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+    <div class="resume-generator">
+        <header class="app-header">
+            <h1>Gerador de Currículo</h1>
+            <p>Preencha o formulário abaixo e gere seu currículo profissional</p>
+        </header>
+        
+        <div class="app-container">
+            <!-- Formulário de Entrada -->
+            <div class="form-section">
+                <form id="resume-form">
+                    <div class="form-group">
+                        <h2>Informações Pessoais</h2>
+                        <div class="form-row">
+                            <div class="form-col">
+                                <label for="name">Nome Completo</label>
+                                <input type="text" id="name" required>
+                            </div>
+                            <div class="form-col">
+                                <label for="profession">Profissão</label>
+                                <input type="text" id="profession" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <label for="email">E-mail</label>
+                                <input type="email" id="email" required>
+                            </div>
+                            <div class="form-col">
+                                <label for="phone">Telefone</label>
+                                <input type="tel" id="phone" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <label for="address">Endereço</label>
+                                <input type="text" id="address">
+                            </div>
+                            <div class="form-col">
+                                <label for="linkedin">LinkedIn</label>
+                                <input type="url" id="linkedin">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <h2>Resumo Profissional</h2>
+                        <textarea id="summary" rows="4" placeholder="Descreva brevemente sua experiência e habilidades"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <h2>Experiência Profissional</h2>
+                        <div id="experience-container">
+                            <!-- Experiências serão adicionadas aqui -->
+                        </div>
+                        <button type="button" id="add-experience" class="add-btn">
+                            <i class="fas fa-plus"></i> Adicionar Experiência
+                        </button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <h2>Formação Acadêmica</h2>
+                        <div id="education-container">
+                            <!-- Formações serão adicionadas aqui -->
+                        </div>
+                        <button type="button" id="add-education" class="add-btn">
+                            <i class="fas fa-plus"></i> Adicionar Formação
+                        </button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <h2>Habilidades</h2>
+                        <div id="skills-container">
+                            <!-- Habilidades serão adicionadas aqui -->
+                        </div>
+                        <button type="button" id="add-skill" class="add-btn">
+                            <i class="fas fa-plus"></i> Adicionar Habilidade
+                        </button>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" id="generate-resume" class="primary-btn">
+                            <i class="fas fa-eye"></i> Visualizar Currículo
+                        </button>
+                        <button type="button" id="reset-form" class="secondary-btn">
+                            <i class="fas fa-redo"></i> Limpar Formulário
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Visualização do Currículo -->
+            <div class="preview-section">
+                <div class="preview-header">
+                    <h2>Pré-visualização</h2>
+                    <button id="export-pdf" class="export-btn" disabled>
+                        <i class="fas fa-file-pdf"></i> Exportar para PDF
+                    </button>
+                </div>
+                
+                <div id="resume-preview" class="resume-template">
+                    <!-- O currículo será gerado aqui -->
+                    <div class="template-message">
+                        <i class="fas fa-file-alt"></i>
+                        <p>Preencha o formulário ao lado para gerar seu currículo</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Template para itens dinâmicos -->
+    <template id="experience-template">
+        <div class="dynamic-item">
+            <div class="form-row">
+                <div class="form-col">
+                    <label>Empresa</label>
+                    <input type="text" class="company" required>
+                </div>
+                <div class="form-col">
+                    <label>Cargo</label>
+                    <input type="text" class="position" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-col">
+                    <label>Período</label>
+                    <input type="text" class="period" placeholder="Ex: 2020 - 2022" required>
+                </div>
+                <div class="form-col">
+                    <label>Local</label>
+                    <input type="text" class="location">
+                </div>
+            </div>
+            <textarea class="description" rows="3" placeholder="Descrição das atividades"></textarea>
+            <button type="button" class="remove-btn">
+                <i class="fas fa-trash"></i> Remover
+            </button>
+        </div>
+    </template>
+    
+    <template id="education-template">
+        <div class="dynamic-item">
+            <div class="form-row">
+                <div class="form-col">
+                    <label>Instituição</label>
+                    <input type="text" class="institution" required>
+                </div>
+                <div class="form-col">
+                    <label>Curso</label>
+                    <input type="text" class="course" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-col">
+                    <label>Período</label>
+                    <input type="text" class="period" placeholder="Ex: 2016 - 2020" required>
+                </div>
+                <div class="form-col">
+                    <label>Nível</label>
+                    <input type="text" class="degree" placeholder="Ex: Bacharelado">
+                </div>
+            </div>
+            <button type="button" class="remove-btn">
+                <i class="fas fa-trash"></i> Remover
+            </button>
+        </div>
+    </template>
+    
+    <template id="skill-template">
+        <div class="dynamic-item skill-item">
+            <div class="form-row">
+                <div class="form-col">
+                    <label>Habilidade</label>
+                    <input type="text" class="skill-name" required>
+                </div>
+                <div class="form-col">
+                    <label>Nível</label>
+                    <select class="skill-level">
+                        <option value="Iniciante">Iniciante</option>
+                        <option value="Intermediário">Intermediário</option>
+                        <option value="Avançado">Avançado</option>
+                        <option value="Especialista">Especialista</option>
+                    </select>
+                </div>
+            </div>
+            <button type="button" class="remove-btn">
+                <i class="fas fa-trash"></i> Remover
+            </button>
+        </div>
+    </template>
+
+    <script src=".js"></script>
+</body>
+</html>
